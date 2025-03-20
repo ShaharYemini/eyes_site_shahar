@@ -1,0 +1,295 @@
+body {
+    font-family: 'Noto Sans Hebrew', sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+    background-color: #fffdd1;
+    color: #333;
+    direction: rtl; /* Ensure RTL for text direction */
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+/* Container to center the animation */
+.container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    flex-direction: row;
+}
+
+.column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.secondary {
+    width: 30vw;
+    height: auto;
+    margin: 0.5em;
+}
+
+.third {
+    width: auto;
+    height: 17vw;
+    margin: 0.5em;
+}
+
+/* Hide elements with .preload until JS removes it */
+.preload h1,
+.preload p {
+    opacity: 0;
+}
+
+h1 {
+    font-size: 10em;
+    margin: 0 0.1em;
+    line-height: 1;
+}
+
+h2 {
+    font-size: 6em;
+    margin: 0 0.1em;
+    line-height: 1;
+}
+
+h3 {
+    font-size: 4em;
+    margin: 0 0.1em;
+    line-height: 1;
+}
+
+h4 {
+    font-size: 2.5em;
+    margin: 0 0.1em;
+    line-height: 1;
+}
+
+h5 {
+    font-size: 1.5em;
+    margin: 0 0.1em;
+    line-height: 1;
+}
+
+p {
+    font-size: 2em;
+    margin: 0.2em;
+}
+
+span {
+    margin: 0.05em;
+}
+
+.text-letters-animation.activate span {
+    display: inline-block;
+    animation: circularFlyInLeftLetters 0.8s ease-in forwards;
+    opacity: 0;
+}
+
+@keyframes circularFlyInLeftLetters {
+    0% {
+      transform: translateX(-50vw) translateY(-20vh) rotate(270deg);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0vw) translateY(0vh) rotate(360deg);
+      opacity: 1;
+    }
+  }
+
+/* Animation definition */
+@keyframes circularFlyIn {
+    0% {
+        transform: translateX(50vw) translateY(-20vh) rotate(270deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(0vw) translateY(0vh) rotate(360deg);
+        opacity: 1;
+    }
+}
+
+/* Apply the animation */
+.title-animation {
+    animation: circularFlyIn 1s ease-out forwards;
+}
+
+/* Container to hold the two halves */
+.image-container {
+    position: relative;
+    width: 70vw;
+    height: 70vh;
+    overflow: hidden;
+}
+
+/* Left half of the image */
+.left-half-1 {
+    width: auto; /* Half the width of the container */
+    height: 50vh;
+    animation: flyFromLeft 4s ease-in-out forwards;
+}
+
+/* Right half of the image */
+.right-half-1 {
+    width: auto; /* Half the width of the container */
+    height: 50vh;
+    animation: flyFromRight 4s ease-in-out forwards;
+}
+
+/* Animation for the left half */
+@keyframes flyFromLeft {
+    0% {
+        transform: translateX(-100vw) rotate(270deg); /* Start off-screen to the left */
+    }
+
+    50% {
+        transform: translateX(0) translateY(30%) rotate(0);
+    }
+
+    100% {
+        transform: translateY(0); /* Move to its original position */
+    }
+}
+
+/* Animation for the right half */
+@keyframes flyFromRight {
+    0% {
+        transform: translateX(100vw) rotate(90deg); /* Start off-screen to the right */
+    }
+
+    50% {
+        transform: translateX(0) translateY(-30%) rotate(0);
+    }
+
+    100% {
+        transform: translateY(0); /* Move to its original position */
+    }
+}
+
+/* Position the progress indicator in the top-right corner */
+.progress-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    z-index: 1000;
+}
+
+/* Donut SVG */
+.progress-donut {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* Rotate to start progress at the top */
+}
+
+/* Background circle */
+.donut-bg {
+    fill: none;
+    stroke: #ddd; /* Light gray background */
+    stroke-width: 10;
+}
+
+/* Progress circle */
+.donut-progress {
+    fill: none;
+    stroke: #f08be2; /* Bright color for progress */
+    stroke-width: 10;
+    stroke-linecap: round; /* Rounded ends for progress */
+    stroke-dasharray: 283; /* Circumference of the circle (2 * π * r) */
+    stroke-dashoffset: 283; /* Start with no progress */
+    transition: stroke-dashoffset 0.3s ease; /* Smooth progress animation */
+}
+
+/* Dots for containers */
+.progress-dot {
+    fill: #ddd; /* Default color for unfilled dots */
+    transition: fill 0.3s ease; /* Smooth color transition */
+}
+
+/* Define sizes */
+:root {
+    --containerSideLength: 100vh; /* Left image side length */
+    --scale: 0.1; /* Scale factor for image sizes */
+    --halfSqrt2: 0.707; /* Half of square root of 2 */
+    --centerX: calc(var(--containerSideLength) / 2); /* Center X coordinate */
+    --centerY: calc(var(--containerSideLength) / 2); /* Center Y coordinate */
+    --leftImgSideLength: calc(var(--containerSideLength) * var(--scale) * 6); /* Left image side length */
+    --rightImgSideLength: calc(var(--containerSideLength) * var(--scale) * 5); /* Right image side length */
+    --leftImgX: calc(var(--centerX) - var(--leftImgSideLength) / 2 * (var(--halfSqrt2) + 1)); /* Left image X coordinate */
+    --leftImgY: calc(var(--centerY) + var(--leftImgSideLength) / 2 * (var(--halfSqrt2) - 1)); /* Left image Y coordinate */
+    --rightImgX: calc(var(--centerX) + var(--rightImgSideLength) / 2 * (var(--halfSqrt2) - 1)); /* Right image X coordinate */
+    --rightImgY: calc(var(--centerY) - var(--rightImgSideLength) / 2 * (var(--halfSqrt2) + 1)); /* Right image Y coordinate */
+}
+
+/* Container with fixed aspect ratio (1:1) */
+.image-pair-container {
+    position: relative; /* Ensure images are positioned relative to this container */
+    width: var(--containerSideLength); /* 30% of the viewport width */
+    height: var(--containerSideLength); /* Same as width to maintain 1:1 aspect ratio */
+    margin: 0 auto; /* Center the container horizontally */
+    overflow: visible;
+}
+
+/* Left image */
+.left-half-2 {
+    position: absolute;
+    width: var(--leftImgSideLength); /* Adjust size as needed */
+    height: var(--leftImgSideLength);
+    transform: rotate(45deg); /* Tilt the image */
+    top: var(--leftImgY); /* Adjust position */
+    left: var(--leftImgX);
+    animation: flyFromLeftDiagonal 4s ease-in-out forwards;
+
+}
+
+/* Right image */
+.right-half-2 {
+    position: absolute;
+    width: var(--rightImgSideLength); /* Adjust size as needed */
+    height: var(--rightImgSideLength);
+    transform: rotate(45deg); /* Tilt the image */
+    top: var(--rightImgY); /* Adjust position */
+    left: var(--rightImgX);
+    animation: flyFromRightDiagonal 4s ease-in-out forwards;
+}
+
+/* Animation for the left half */
+@keyframes flyFromLeftDiagonal {
+    0% {
+        transform: translateX(-20vw) translateY(-20vw) rotate(45deg); /* Start off-screen to the left */
+    }
+
+    100% {
+        transform: translateX(0) translateY(0) rotate(45deg); /* Move to its original position */
+    }
+}
+
+/* Animation for the right half */
+@keyframes flyFromRightDiagonal {
+    0% {
+        transform: translateX(20vw) translateY(20vw) rotate(45deg); /* Start off-screen to the right */
+    }
+
+    100% {
+        transform: translateX(0) translateY(0) rotate(45deg); /* Move to its original position */
+    }
+}
+
+.full {
+    width: 60vw;
+    height: auto;
+    margin: 0.5em;
+}
+  
