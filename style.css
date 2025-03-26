@@ -13,7 +13,7 @@ body {
 /* Container to center the animation */
 .container {
     height: 100vh;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     overflow: visible;
