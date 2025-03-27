@@ -83,9 +83,9 @@ const progressAngle = totalProgress * 360; // Convert progress to degrees
 dots.forEach((dot, index) => {
     const dotAngle = (index / totalContainers) * 360; // Angle of the dot in degrees
     if (dotAngle <= progressAngle) {
-        dot.style.fill = '#f08be2'; // Same color as the progress bar
+        dot.style.fill = '#ff847c'; // Same color as the progress bar
     } else {
-        dot.style.fill = '#ddd'; // Background color for unfilled dots
+        dot.style.fill = '#fecea8'; // Background color for unfilled dots
     }
 });
 }
@@ -139,13 +139,74 @@ function computeOffsets(angle) {
 });
 
 function letters_animation(element, wait) {
-  const letters = element.textContent.split(''); // Splits into individual characters
-  element.innerHTML = letters.map((letter, index) => {
-      // Preserve spaces by using a non-breaking space or keeping the original character
-      const displayLetter = letter === ' ' ? '&nbsp;' : letter;
+  const text = element.textContent;
+  const segments = [];
+  let currentSegment = '';
+  let isHebrew = null; // Null until we determine the first language
+
+  // Helper to check if a character is Hebrew (Unicode range U+0590 to U+05FF)
+  function isHebrewChar(char) {
+    return /[\u0590-\u05FF]/.test(char);
+  }
+
+  // Helper to check if a character is punctuation (basic set for now)
+  function isPunctuation(char) {
+    return /[.,!?;:-]/.test(char); // Add more punctuation as needed
+  }
+
+  // Split text into segments based on language, handling punctuation
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const charIsHebrew = isHebrewChar(char);
+    const charIsPunctuation = isPunctuation(char);
+
+    if (i === 0) {
+      // First character sets the initial direction (unless it's punctuation)
+      if (!charIsPunctuation) {
+        isHebrew = charIsHebrew;
+      }
+      currentSegment = char;
+    } else {
+      if (charIsPunctuation) {
+        // Punctuation follows the current segment's direction
+        currentSegment += char;
+      } else if (isHebrew === null) {
+        // If we started with punctuation, set direction based on first letter
+        isHebrew = charIsHebrew;
+        currentSegment += char;
+      } else if (charIsHebrew === isHebrew) {
+        // Same language as current segment
+        currentSegment += char;
+      } else {
+        // Language switch: push current segment and start new one
+        segments.push({ text: currentSegment, isHebrew: isHebrew });
+        currentSegment = char;
+        isHebrew = charIsHebrew;
+      }
+    }
+  }
+  // Push the final segment
+  if (currentSegment) {
+    segments.push({ text: currentSegment, isHebrew: isHebrew });
+  }
+
+  // Process each segment into animated letters
+  let html = '';
+  let charIndex = 0;
+  segments.forEach(segment => {
+    const letters = segment.text.split('');
+    const direction = segment.isHebrew ? 'rtl' : 'ltr';
+    const segmentHtml = letters.map(letter => {
+      const displayLetter = letter === ' ' ? ' ' : letter;
       const randomDelay = Math.random() * 0.5;
-      return `<span style="animation-delay: ${index * 0.03 + randomDelay + wait}s">${displayLetter}</span>`;
-  }).join('');
+      const delay = charIndex * 0.03 + randomDelay + wait;
+      charIndex++;
+      return `<span style="animation-delay: ${delay}s; display: inline-block;">${displayLetter}</span>`;
+    }).join('');
+    html += `<span dir="${direction}">${segmentHtml}</span>`;
+  });
+
+  element.innerHTML = html;
 }
 
 function make_letters_animations(containers) {
